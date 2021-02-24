@@ -1,4 +1,12 @@
+import os
 
+path_files = {
+    "a": os.path.join("files", "a_example"),
+    "b": os.path.join("files", "b_little_bit_of_everything.in"),
+    "c": os.path.join("files", "c_many_ingredients.in"),
+    "d": os.path.join("files", "d_many_pizzas.in"),
+    "e": os.path.join("files", "e_many_teams.in"),
+}
 
 def read_file(file_path):
     with open(file_path) as file:
@@ -12,7 +20,7 @@ def separate_first_line(content):
     content = content[index+1:]
     return first_line, content
 
-def separate_content(nb_line):
+def separate_content(content):
     lines = content.split("\n")
     return lines[:-1] # we remove the last line which is ''
 
