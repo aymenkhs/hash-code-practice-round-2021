@@ -1,5 +1,9 @@
 __pycache__/
 
-outputs/
+outputs/a_example
+outputs/b_little_bit_of_everything.in
+outputs/c_many_ingredients.in
+outputs/d_many_pizzas.in
+outputs/e_many_teams.in
 
 *.rar
