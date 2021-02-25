@@ -41,14 +41,14 @@ class Team:
 
 def create_delivery(team_nb):
     # we choose the pizza with the most ingrediants
-    selected_pizzas = [Pizza.SORTED_PIZZAS[0]]
-    Pizza.SORTED_PIZZAS[0].delivered = True
-    del(Pizza.SORTED_PIZZAS[0])
+    selected_pizzas = [Pizza.PIZZAS[0]]
+    Pizza.PIZZAS[0].delivered = True
+    del(Pizza.PIZZAS[0])
     # then we'll choose the pizza that add the max different igrediants
     for _ in range(1,team_nb):
         max_diff = 0
         max_pizza = None
-        for pizza in Pizza.SORTED_PIZZAS:
+        for pizza in Pizza.PIZZAS:
             if pizza.delivered:
                 continue
             diff = 0
@@ -60,17 +60,32 @@ def create_delivery(team_nb):
                 if not present:
                     # we increment the number of different ingredients if it's not present in the other pizzas
                     diff += 1
+
             if diff > max_diff:
                 max_diff = diff
                 max_pizza = pizza
+            elif (diff == max_diff) and (max_pizza == None):
+                max_diff = diff
+                max_pizza = pizza
+            elif (diff == max_diff) and (max_pizza.nb_ingrediants > pizza.nb_ingrediants):
+                print(pizza, diff, pizza.nb_ingrediants)
+                print(max_pizza, max_diff, max_pizza.nb_ingrediants)
+                max_diff = diff
+                max_pizza = pizza
+
         selected_pizzas.append(max_pizza)
         max_pizza.delivered = True
-        del Pizza.SORTED_PIZZAS[Pizza.SORTED_PIZZAS.find(max_pizza)]
+        del Pizza.PIZZAS[Pizza.PIZZAS.index(max_pizza)]
+
     return Team(team_nb, selected_pizzas)
 
+
 def build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4):
+
+    deliveries = []
+
     # sort our list
-    Pizza.SORTED_PIZZAS = Pizza.PIZZAS.sort(key=lambda pizza: pizza.nb_ingrediants, reverse=True)
+    Pizza.PIZZAS.sort(key=lambda pizza: pizza.nb_ingrediants, reverse=True)
 
     remaining_pizzas = nb_pizza
 
@@ -78,22 +93,24 @@ def build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4):
     for _ in range(nb_teams4):
         if remaining_pizzas < 4:
             break;
-        create_delivery(4)
+        deliveries.append(create_delivery(4))
         remaining_pizzas-=4
 
     # then we fill the 3 members teams deliveries
     for _ in range(nb_teams3):
         if remaining_pizzas < 3:
             break;
-        create_delivery(3)
+        deliveries.append(create_delivery(3))
         remaining_pizzas-=3
 
     # finally the 2 members teams deliveries
     for _ in range(nb_teams2):
         if remaining_pizzas < 2:
             break;
-        create_delivery(2)
+        deliveries.append(create_delivery(2))
         remaining_pizzas-=2
+
+    return deliveries
 
 
 def main():
@@ -109,6 +126,8 @@ def main():
     for i in range(nb_pizza):
         nb_ingredients, ingrediants = input.line_content(lines[i])
         Pizza.PIZZAS.append(Pizza(i, nb_ingredients, ingrediants))
+
+    print(build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4))
 
 
 if __name__ == '__main__':
