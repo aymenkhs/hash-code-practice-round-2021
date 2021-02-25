@@ -1,4 +1,5 @@
 import input
+import output
 
 class Pizza:
     PIZZAS = []
@@ -36,7 +37,7 @@ class Team:
     def __init__(self, nb, pizzas):
         self.nb = nb
         self.pizzas = pizzas
-        self.index_pizzas = [pizza.pizza_num for pizza in pizzas]
+        self.index_pizzas = [str(pizza.pizza_num) for pizza in pizzas]
 
 
 def create_delivery(team_nb):
@@ -68,8 +69,6 @@ def create_delivery(team_nb):
                 max_diff = diff
                 max_pizza = pizza
             elif (diff == max_diff) and (max_pizza.nb_ingrediants > pizza.nb_ingrediants):
-                print(pizza, diff, pizza.nb_ingrediants)
-                print(max_pizza, max_diff, max_pizza.nb_ingrediants)
                 max_diff = diff
                 max_pizza = pizza
 
@@ -115,7 +114,7 @@ def build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4):
 
 def main():
     # read the file
-    content = input.read_file(input.path_files["a"])
+    content = input.read_file(input.path_files["b"])
     # separate the first line
     first_line, content = input.separate_first_line(content)
     # extract content from the first line
@@ -127,7 +126,9 @@ def main():
         nb_ingredients, ingrediants = input.line_content(lines[i])
         Pizza.PIZZAS.append(Pizza(i, nb_ingredients, ingrediants))
 
-    print(build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4))
+    deliveries = build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4)
+
+    output.write_file(output.outputs_files["b"], deliveries)
 
 
 if __name__ == '__main__':
