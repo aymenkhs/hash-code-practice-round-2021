@@ -1,11 +1,14 @@
 import input
 
 class Pizza:
+    PIZZAS = []
+    SORTED_PIZZAS = []
 
     def __init__(self, pizza_num, nb_ingrediants, list_ingrediants):
         self.pizza_num = pizza_num
         self.nb_ingrediants = nb_ingrediants
         self.list_ingrediants = list_ingrediants
+        self.delivered = False
 
     def __str__(self):
         return "num:{}\nnb_ingrediants:{}\ningrediants{}\n".format(self.pizza_num,
@@ -29,6 +32,69 @@ class Pizza:
     def __next__(self):
         return next(self.list_ingrediants)
 
+class Team:
+    def __init__(self, nb, pizzas):
+        self.nb = nb
+        self.pizzas = pizzas
+        self.index_pizzas = [pizza.pizza_num for pizza in pizzas]
+
+
+def create_delivery(team_nb):
+    # we choose the pizza with the most ingrediants
+    selected_pizzas = [Pizza.SORTED_PIZZAS[0]]
+    Pizza.SORTED_PIZZAS[0].delivered = True
+    del(Pizza.SORTED_PIZZAS[0])
+    # then we'll choose the pizza that add the max different igrediants
+    for _ in range(1,team_nb):
+        max_diff = 0
+        max_pizza = None
+        for pizza in Pizza.SORTED_PIZZAS:
+            if pizza.delivered:
+                continue
+            diff = 0
+            for ingrediant in pizza:
+                present = False # if the ingrediant is already present in our selected pizzas
+                for pizza_i in selected_pizzas:
+                    if ingrediant in pizza_i:
+                        present = True # if we find the ingrediant we make the value to true
+                if not present:
+                    # we increment the number of different ingredients if it's not present in the other pizzas
+                    diff += 1
+            if diff > max_diff:
+                max_diff = diff
+                max_pizza = pizza
+        selected_pizzas.append(max_pizza)
+        max_pizza.delivered = True
+        del Pizza.SORTED_PIZZAS[Pizza.SORTED_PIZZAS.find(max_pizza)]
+    return Team(team_nb, selected_pizzas)
+
+def build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4):
+    # sort our list
+    Pizza.SORTED_PIZZAS = Pizza.PIZZAS.sort(key=lambda pizza: pizza.nb_ingrediants, reverse=True)
+
+    remaining_pizzas = nb_pizza
+
+    # we begin to fill the 4 members teams deliveries
+    for _ in range(nb_teams4):
+        if remaining_pizzas < 4:
+            break;
+        create_delivery(4)
+        remaining_pizzas-=4
+
+    # then we fill the 3 members teams deliveries
+    for _ in range(nb_teams3):
+        if remaining_pizzas < 3:
+            break;
+        create_delivery(3)
+        remaining_pizzas-=3
+
+    # finally the 2 members teams deliveries
+    for _ in range(nb_teams2):
+        if remaining_pizzas < 2:
+            break;
+        create_delivery(2)
+        remaining_pizzas-=2
+
 
 def main():
     # read the file
@@ -40,10 +106,9 @@ def main():
     # separate the folowing lines
     lines = input.separate_content(content)
     # extract the content from each line
-    pizzas = []
     for i in range(nb_pizza):
         nb_ingredients, ingrediants = input.line_content(lines[i])
-        pizzas.append(Pizza(i, nb_ingredients, ingrediants))
+        Pizza.PIZZAS.append(Pizza(i, nb_ingredients, ingrediants))
 
 
 if __name__ == '__main__':
