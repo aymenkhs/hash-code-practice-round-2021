@@ -1,3 +1,5 @@
+import argparse
+
 import input
 import output
 
@@ -71,6 +73,8 @@ def create_delivery(team_nb):
             elif (diff == max_diff) and (max_pizza.nb_ingrediants > pizza.nb_ingrediants):
                 max_diff = diff
                 max_pizza = pizza
+            elif max_diff >= pizza.nb_ingrediants:
+                break
 
         selected_pizzas.append(max_pizza)
         max_pizza.delivered = True
@@ -109,12 +113,23 @@ def build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4):
         deliveries.append(create_delivery(2))
         remaining_pizzas-=2
 
+
+
     return deliveries
 
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--file", help="""name of file can be 'a' or 'b' or 'c' or 'd' or 'e'""")
+    return parser.parse_args()
 
 def main():
+
+    args = parse_arguments()
+    if args.file not in ('a','b','c','d','e'):
+        raise ValueError("argument file (-f) must be equal to 'a' or 'b' or 'c' or 'd' or 'e'")
+
     # read the file
-    content = input.read_file(input.path_files["b"])
+    content = input.read_file(input.path_files[args.file])
     # separate the first line
     first_line, content = input.separate_first_line(content)
     # extract content from the first line
@@ -128,7 +143,7 @@ def main():
 
     deliveries = build_solution(nb_pizza, nb_teams2, nb_teams3, nb_teams4)
 
-    output.write_file(output.outputs_files["b"], deliveries)
+    output.write_file(output.outputs_files[args.file], deliveries)
 
 
 if __name__ == '__main__':
